@@ -1,7 +1,8 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import base64
-
+from utils.ocr_utils import ocr_with_boxes
+from utils.overlay_html_utils import build_overlay_html
 from utils.pdf_utils import extract_pages_and_images
 from utils.translate_utils import translate_text
 from utils.export_utils import export_pdf, export_word, export_excel
@@ -42,6 +43,12 @@ if uploaded_file:
                 translated_pages.append("")
 
     st.success("Translation completed successfully ✅")
+    show_lens = st.toggle(
+        "🔍 Enable Google-Lens Style Translation Layer (Hover to Translate)",
+        value=False
+    )
+
+ 
 
     # -------------------- BOOK-STYLE PREVIEW --------------------
     st.divider()
@@ -92,6 +99,23 @@ if uploaded_file:
             height=900,
             scrolling=True
         )
+        # ---------------- GOOGLE LENS STYLE OVERLAY ----------------
+        if show_lens:
+            ocr_boxes = ocr_with_boxes(page_images[i])
+        
+            for box in ocr_boxes:
+                try:
+                    box["translated"] = translate_text(box["text"])
+                except:
+                    box["translated"] = box["text"]
+        
+            overlay_html = build_overlay_html(img_base64, ocr_boxes)
+        
+            components.html(
+                overlay_html,
+                height=800,
+                scrolling=True
+            )
 
         # Store text for export
         edited_pages.append(translated_pages[i])
