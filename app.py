@@ -1,28 +1,39 @@
 import streamlit as st
+import streamlit.components.v1 as components
+import base64
 
 from utils.pdf_utils import extract_pages_and_images
 from utils.translate_utils import translate_text
 from utils.export_utils import export_pdf, export_word, export_excel
 from utils.voice_utils import text_to_voice
 
+
+# -------------------- PAGE CONFIG --------------------
 st.set_page_config(
     page_title="German Module Translator",
     layout="wide"
 )
 
 st.title("📘 German PDF → English (Module Handbook Translator)")
+st.caption("Book-style preview • Long PDF safe • Student-friendly")
 
+
+# -------------------- FILE UPLOAD --------------------
 uploaded_file = st.file_uploader(
     "Upload German PDF",
     type=["pdf"]
 )
 
+
+# -------------------- MAIN LOGIC --------------------
 if uploaded_file:
+
+    # 1️⃣ Extract pages + text
     with st.spinner("Reading PDF and extracting pages..."):
         page_images, german_pages = extract_pages_and_images(uploaded_file)
 
+    # 2️⃣ Translate page by page (safe for long PDFs)
     translated_pages = []
-
     with st.spinner("Translating page by page..."):
         for page_text in german_pages:
             if page_text.strip():
@@ -30,67 +41,98 @@ if uploaded_file:
             else:
                 translated_pages.append("")
 
-    st.success("Translation completed")
+    st.success("Translation completed successfully ✅")
 
+    # -------------------- BOOK-STYLE PREVIEW --------------------
     st.divider()
-    st.subheader("📄 PDF-like Preview with English Translation")
+    st.subheader("📖 Book-style English Preview (Easy Reading)")
 
     edited_pages = []
 
     for i in range(len(page_images)):
-        st.markdown(f"### Page {i+1}")
 
-        # Show original PDF page as image
-        st.image(page_images[i], use_column_width=True)
+        # Convert image bytes → base64
+        img_base64 = base64.b64encode(page_images[i]).decode()
 
-        # Show English translation
-        edited_text = st.text_area(
-            f"English Translation – Page {i+1}",
-            translated_pages[i],
-            height=220
+        # HTML for book-style page
+        html_page = f"""
+        <div style="
+            max-width:900px;
+            margin:40px auto;
+            padding:30px;
+            background:#f7f7f7;
+            border-radius:12px;
+            box-shadow:0 0 18px rgba(0,0,0,0.15);
+        ">
+
+            <div style="text-align:center; margin-bottom:20px;">
+                <strong style="font-size:20px;">Page {i+1}</strong>
+            </div>
+
+            <img src="data:image/png;base64,{img_base64}"
+                 style="width:100%; border-radius:8px;" />
+
+            <hr style="margin:30px 0"/>
+
+            <div style="
+                font-family:Georgia, serif;
+                font-size:18px;
+                line-height:1.7;
+                color:#222;
+                white-space:pre-wrap;
+            ">
+                {translated_pages[i]}
+            </div>
+
+        </div>
+        """
+
+        components.html(
+            html_page,
+            height=900,
+            scrolling=True
         )
 
-        edited_pages.append(edited_text)
-        st.divider()
+        # Store text for export
+        edited_pages.append(translated_pages[i])
 
+    # -------------------- EXPORT SECTION --------------------
     final_text = "\n\n".join(edited_pages)
 
+    st.divider()
     st.subheader("⬇ Download Translated Document")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        if st.button("Download PDF"):
-            path = export_pdf(final_text)
-            with open(path, "rb") as f:
-                st.download_button(
-                    "Download PDF",
-                    f,
-                    "translated.pdf"
-                )
+        path = export_pdf(final_text)
+        with open(path, "rb") as f:
+            st.download_button(
+                "📄 Download PDF",
+                f,
+                "translated.pdf"
+            )
 
     with col2:
-        if st.button("Download Word"):
-            path = export_word(final_text)
-            with open(path, "rb") as f:
-                st.download_button(
-                    "Download Word",
-                    f,
-                    "translated.docx"
-                )
+        path = export_word(final_text)
+        with open(path, "rb") as f:
+            st.download_button(
+                "📝 Download Word",
+                f,
+                "translated.docx"
+            )
 
     with col3:
-        if st.button("Download Excel"):
-            path = export_excel(final_text)
-            with open(path, "rb") as f:
-                st.download_button(
-                    "Download Excel",
-                    f,
-                    "translated.xlsx"
-                )
+        path = export_excel(final_text)
+        with open(path, "rb") as f:
+            st.download_button(
+                "📊 Download Excel",
+                f,
+                "translated.xlsx"
+            )
 
+    # -------------------- VOICE --------------------
     st.divider()
-
     if st.button("🔊 Read Full Translation Aloud"):
         voice_file = text_to_voice(final_text)
         st.audio(voice_file)
