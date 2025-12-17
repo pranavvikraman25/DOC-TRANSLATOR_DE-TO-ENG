@@ -30,11 +30,15 @@ if uploaded_file:
 
     with open("temp.pdf", "wb") as f:
         f.write(uploaded_file.getbuffer())
-
+    
+    # 🔑 RESET FILE POINTER
+    uploaded_file.seek(0)
+    
     tables_per_page = extract_and_translate_tables("temp.pdf")
-
+    
     with st.spinner("Reading PDF and extracting pages..."):
         page_images, german_pages = extract_pages_and_images(uploaded_file)
+
 
 
 # -------------------- MAIN LOGIC --------------------
