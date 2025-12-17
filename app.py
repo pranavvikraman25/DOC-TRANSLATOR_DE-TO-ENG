@@ -28,16 +28,19 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file:
 
-    with open("temp.pdf", "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    # ✅ Read PDF ONCE
+    pdf_bytes = uploaded_file.read()
     
-    # 🔑 RESET FILE POINTER
-    uploaded_file.seek(0)
+    # Save for pdfplumber (tables)
+    with open("temp.pdf", "wb") as f:
+        f.write(pdf_bytes)
     
     tables_per_page = extract_and_translate_tables("temp.pdf")
     
+    # Use SAME bytes for PyMuPDF
     with st.spinner("Reading PDF and extracting pages..."):
-        page_images, german_pages = extract_pages_and_images(uploaded_file)
+        page_images, german_pages = extract_pages_and_images(pdf_bytes)
+
 
 
 
