@@ -7,6 +7,7 @@ from utils.pdf_utils import extract_pages_and_images
 from utils.translate_utils import translate_text
 from utils.export_utils import export_pdf, export_word
 from utils.voice_utils import text_to_voice
+from utils.table_utils import extract_and_translate_tables, table_to_html
 
 
 # -------------------- PAGE CONFIG --------------------
@@ -24,6 +25,16 @@ uploaded_file = st.file_uploader(
     "Upload German PDF",
     type=["pdf"]
 )
+
+if uploaded_file:
+
+    with open("temp.pdf", "wb") as f:
+        f.write(uploaded_file.getbuffer())
+
+    tables_per_page = extract_and_translate_tables("temp.pdf")
+
+    with st.spinner("Reading PDF and extracting pages..."):
+        page_images, german_pages = extract_pages_and_images(uploaded_file)
 
 
 # -------------------- MAIN LOGIC --------------------
@@ -99,6 +110,15 @@ if uploaded_file:
             height=900,
             scrolling=True
         )
+        if tables_per_page[i]:
+            st.markdown("### 📊 Detected Tables (Translated)")
+            for table in tables_per_page[i]:
+                st.markdown(
+                    table_to_html(table),
+                    unsafe_allow_html=True
+                )
+    
+        st.divider()
         # ---------------- GOOGLE LENS STYLE OVERLAY ----------------
         if show_lens:
             try:
