@@ -1,8 +1,7 @@
 streamlit
-pdfplumber
-python-docx
+PyMuPDF
 deep-translator
+python-docx
 reportlab
 pandas
 gTTS
-PyMuPDF
