@@ -5,3 +5,6 @@ python-docx
 reportlab
 pandas
 gTTS
+pytesseract
+Pillow
+opencv-python-headless
