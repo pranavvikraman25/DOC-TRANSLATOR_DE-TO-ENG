@@ -22,7 +22,6 @@ def extract_and_translate_tables(pdf_path):
                         else:
                             translated_row.append("")
                     translated_table.append(translated_row)
-
                 page_tables.append(translated_table)
 
             tables_per_page.append(page_tables)
@@ -31,24 +30,11 @@ def extract_and_translate_tables(pdf_path):
 
 
 def table_to_html(table):
-    html = """
-    <table style="
-        border-collapse:collapse;
-        width:100%;
-        margin:20px 0;
-        font-size:16px;
-    ">
-    """
+    html = "<table style='border-collapse:collapse;width:100%'>"
     for row in table:
         html += "<tr>"
         for cell in row:
-            html += f"""
-            <td style="
-                border:1px solid #999;
-                padding:8px;
-                vertical-align:top;
-            ">{cell}</td>
-            """
+            html += f"<td style='border:1px solid #888;padding:8px'>{cell}</td>"
         html += "</tr>"
-    html += "</table>"
+    html += "</table><br>"
     return html
