@@ -4,13 +4,19 @@ import numpy as np
 from PIL import Image
 import io
 
+
+def is_tesseract_available():
+    try:
+        pytesseract.get_tesseract_version()
+        return True
+    except:
+        return False
+
+
 def ocr_with_boxes(image_bytes):
-    """
-    Returns list of:
-    {
-      text, x, y, w, h
-    }
-    """
+    if not is_tesseract_available():
+        raise RuntimeError("TESSERACT_NOT_AVAILABLE")
+
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     img = np.array(image)
 
