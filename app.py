@@ -5,7 +5,7 @@ from utils.ocr_utils import ocr_with_boxes
 from utils.overlay_html_utils import build_overlay_html
 from utils.pdf_utils import extract_pages_and_images
 from utils.translate_utils import translate_text
-from utils.export_utils import export_pdf, export_word, export_excel
+from utils.export_utils import export_pdf, export_word
 from utils.voice_utils import text_to_voice
 
 
@@ -144,15 +144,6 @@ if uploaded_file:
                 "📝 Download Word",
                 f,
                 "translated.docx"
-            )
-
-    with col3:
-        path = export_excel(final_text)
-        with open(path, "rb") as f:
-            st.download_button(
-                "📊 Download Excel",
-                f,
-                "translated.xlsx"
             )
 
     # -------------------- VOICE --------------------
