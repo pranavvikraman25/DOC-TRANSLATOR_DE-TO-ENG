@@ -56,7 +56,8 @@ if uploaded_file:
     with st.spinner("Translating page by page..."):
         for page_text in german_pages:
             if page_text.strip():
-                translated_pages.append(translate_text(page_text))
+                translated_pages.append(st.cache_data(translate_text)(page_text))
+
             else:
                 translated_pages.append("")
 
