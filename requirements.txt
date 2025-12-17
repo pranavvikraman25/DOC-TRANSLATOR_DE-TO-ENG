@@ -1,0 +1,8 @@
+streamlit
+pdfplumber
+python-docx
+googletrans==4.0.0-rc1
+reportlab
+pandas
+gTTS
+PyMuPDF
