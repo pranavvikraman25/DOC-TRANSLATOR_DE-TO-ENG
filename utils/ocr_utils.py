@@ -1,20 +1,12 @@
 import pytesseract
-import cv2
-import numpy as np
 from PIL import Image
 import io
-
-
-def is_tesseract_available():
-    try:
-        pytesseract.get_tesseract_version()
-        return True
-    except:
-        return False
-
+import numpy as np
 
 def ocr_with_boxes(image_bytes):
-    if not is_tesseract_available():
+    try:
+        pytesseract.get_tesseract_version()
+    except:
         raise RuntimeError("TESSERACT_NOT_AVAILABLE")
 
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
@@ -27,9 +19,7 @@ def ocr_with_boxes(image_bytes):
     )
 
     boxes = []
-    n = len(data["text"])
-
-    for i in range(n):
+    for i in range(len(data["text"])):
         text = data["text"][i].strip()
         if text:
             boxes.append({
