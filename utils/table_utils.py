@@ -28,3 +28,27 @@ def extract_and_translate_tables(pdf_path):
             tables_per_page.append(page_tables)
 
     return tables_per_page
+
+
+def table_to_html(table):
+    html = """
+    <table style="
+        border-collapse:collapse;
+        width:100%;
+        margin:20px 0;
+        font-size:16px;
+    ">
+    """
+    for row in table:
+        html += "<tr>"
+        for cell in row:
+            html += f"""
+            <td style="
+                border:1px solid #999;
+                padding:8px;
+                vertical-align:top;
+            ">{cell}</td>
+            """
+        html += "</tr>"
+    html += "</table>"
+    return html
