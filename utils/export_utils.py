@@ -1,7 +1,6 @@
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import docx
-import pandas as pd
 import tempfile
 
 def export_pdf(text):
@@ -22,10 +21,4 @@ def export_word(text):
     doc = docx.Document()
     doc.add_paragraph(text)
     doc.save(file.name)
-    return file.name
-
-def export_excel(text):
-    file = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
-    df = pd.DataFrame({"Translated Text": text.split("\n")})
-    df.to_excel(file.name, index=False)
     return file.name
