@@ -8,3 +8,4 @@ gTTS
 pytesseract
 Pillow
 opencv-python-headless
+pdfplumber
