@@ -101,21 +101,30 @@ if uploaded_file:
         )
         # ---------------- GOOGLE LENS STYLE OVERLAY ----------------
         if show_lens:
-            ocr_boxes = ocr_with_boxes(page_images[i])
+            try:
+                ocr_boxes = ocr_with_boxes(page_images[i])
         
-            for box in ocr_boxes:
-                try:
-                    box["translated"] = translate_text(box["text"])
-                except:
-                    box["translated"] = box["text"]
+                for box in ocr_boxes:
+                    try:
+                        box["translated"] = translate_text(box["text"])
+                    except:
+                        box["translated"] = box["text"]
         
-            overlay_html = build_overlay_html(img_base64, ocr_boxes)
+                overlay_html = build_overlay_html(img_base64, ocr_boxes)
         
-            components.html(
-                overlay_html,
-                height=800,
-                scrolling=True
-            )
+                components.html(
+                    overlay_html,
+                    height=800,
+                    scrolling=True
+                )
+        
+            except RuntimeError:
+                st.warning(
+                    "🔍 Google-Lens mode requires OCR support. "
+                    "This feature works locally or in Docker, "
+                    "but is limited on Streamlit Cloud."
+                )
+
 
         # Store text for export
         edited_pages.append(translated_pages[i])
